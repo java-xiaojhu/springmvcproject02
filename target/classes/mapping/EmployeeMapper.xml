@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.accp.springmvc.dao.IEmployeeDao">
+	<sql id="selall">
+		SELECT * FROM
+	</sql>
+	<select id="selectEmployee" resultType="EmployeeVo">
+		<include refid="selall" />employee
+		INNER JOIN `position` ON employee.`positionId`=`position`.`positionId`
+		INNER JOIN `department` ON employee.`departmentId`=department.`departmentId`
+		where `employeeId` =#{employee.employeeId} and
+		`password`=#{employee.password}
+	</select>
+	
+	<select id="selectOneEmployee" resultType="EmployeeVo">
+		<include refid="selall" />employee
+		INNER JOIN `position` ON employee.`positionId`=`position`.`positionId`
+		INNER JOIN `department` ON employee.`departmentId`=department.`departmentId`
+		where `employeeId` =#{employeeId}
+	</select>
+
+</mapper>

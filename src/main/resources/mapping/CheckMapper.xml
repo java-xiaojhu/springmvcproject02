@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.accp.springmvc.dao.ICheckDao">
+	<sql id="selall">
+		select * from 
+	</sql>
+	
+	<!--  -->
+		<!-- 新增请假审批表 -->
+	<insert id="addCheack">
+		INSERT INTO
+		`tb_check`(`bizId`,`typeId`,`checkTime`,`checkMan`,`checkResult`,`checkComment`)
+		VALUES(#{tbCheck.bizId},#{tbCheck.typeId},NOW(),#{tbCheck.checkMan},#{tbCheck.checkResult},#{tbCheck.checkComment})
+	</insert>
+	
+</mapper>

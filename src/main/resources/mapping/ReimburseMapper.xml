@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.accp.springmvc.dao.IReimbursementDao">
+	<sql id="selall">
+		SELECT * FROM
+	</sql>
+	<!-- resultMap -->
+	<resultMap type="ReimburseVo" id="Reimburse">
+		<id property="reimburseId" column="reimburseId" />
+		<result property="typeId" column="typeId" />
+		<result property="createMan" column="createMan" />
+		<result property="positionName" column="positionName" />
+		<result property="employeeName" column="employeeName" />
+		<result property="createTime" column="createTime" />
+		<result property="departmentId" column="departmentId" />
+		<result property="departmentName" column="departmentName" />
+		<result property="nextDealMan" column="nextDealMan" />
+		<result property="nextEmployeeName" column="nextEmployeeName" />
+		<result property="event" column="event" />
+		<result property="totalCount" column="totalCount" />
+		<result property="statusId" column="statusId" />
+		<result property="statusName" column="statusName" />
+		<collection property="reimburseDetails"
+			column="reimburseId" select="selectReimburseDetail" />
+		<collection property="checksVos" column="reimburseId"
+			select="selectChecks" />
+	</resultMap>
+	<!-- 查询报销查询 -->
+	<select id="selectReimburseDetail" resultType="ReimburseDetail">
+		<include refid="selall" />
+		reimburse_detail WHERE `mainId`=#{0}
+	</select>
+	<!-- 查询审批信息 -->
+	<select id="selectChecks" resultType="CheckVo">
+		SELECT checkId, bizId,
+		typeId,checkTime,checkMan,
+		employee.employeeName,checkResult,checkComment,check_result.resultName
+		FROM
+		`tb_check`
+		INNER
+		JOIN `employee` ON employee.`employeeId`
+		=tb_check.`checkMan`
+		INNER JOIN
+		`check_result` ON
+		`check_result`.`resultId`=tb_check.`checkResult`
+		WHERE
+		`tb_check`.`bizId`=#{0} AND tb_check.`typeId`=2
+	</select>
+
+	<!--查询 -->
+	<select id="selectReimbursement" resultMap="Reimburse">
+		<include refid="selall" />
+		tb_reimburse
+		INNER JOIN `department` ON
+		department.`departmentId`=tb_reimburse.`departmentId`
+		INNER JOIN
+		`tb_status`ON `tb_status`.`statusId`=`tb_reimburse`.`statusId`
+		LEFT
+		JOIN (SELECT employeeId,`employeeName`,`position`.`positionName`
+		FROM
+		`employee` INNER JOIN `position` ON
+		`position`.`positionId`=`employee`.`positionId` WHERE
+		employee.`employeeId`IN (SELECT `createMan` FROM tb_reimburse)) AS a
+		ON a.`employeeId`=tb_reimburse.`createMan`
+		LEFT JOIN (SELECT
+		employeeId,employeeName AS`nextEmployeeName` FROM
+		`employee` WHERE
+		employee.`employeeId` IN (SELECT `nextDealMan` FROM
+		tb_reimburse)) AS b
+		ON b.`employeeId`=tb_reimburse.`nextDealMan`
+		<where>
+			<if test="positionId!=null">
+				
+				<if test="positionId==1  ">
+					createMan IN (SELECT `employeeId` FROM `employee` WHERE
+					`departmentId`=#{departmentId} AND
+					`positionId`IN (2,1) )  AND `reimburseId` NOT IN(SELECT `tb_reimburse`.`reimburseId` FROM `tb_reimburse` WHERE`createMan`!=#{createMan} AND `statusId`=1 )
+				</if>
+				<if test=" positionId==3  or positionId==5 or positionId==0  or positionId==4">
+					 `reimburseId` NOT IN(SELECT `tb_reimburse`.`reimburseId` FROM `tb_reimburse` WHERE`createMan`!=#{createMan} AND `statusId`=1 )
+				</if>
+				<if test="positionId==2 ">
+					createMan=#{createMan}
+				</if>
+			</if>
+			<if test="createName != '' ">
+				and a.employeeName like '%${createName}%'
+			</if>
+			<if test="statusId!=null"> and tb_reimburse.statusId=#{statusId} </if>
+			<if test="starttime != '' and endtime != ''"> and createTime &gt;=#{starttime}
+				AND createTime
+				&lt;=#{endtime} </if>
+			<if test="starttime ==  '' and endtime!= ''">
+				and createTime &lt;=#{endtime} </if>
+			<if test="starttime !=  '' and endtime 
+				==  ''"> and createTime &gt;=#{starttime} </if>
+		</where>
+		order by tb_reimburse.`reimburseId` DESC
+	</select>
+	<!-- 查询报销主表的最大值 -->
+	<select id="selectMaxReimbursemen" resultType="Integer">
+		SELECT
+		MAX(`reimburseId`) FROM `tb_reimburse`
+	</select>
+
+	<!--新增报销表 -->
+	<insert id="addReimbursement">
+		INSERT INTO `tb_reimburse`
+		(`createMan`,`createTime`,`departmentId`,`nextDealMan`,`event`,`totalCount`,`statusId`)
+		VALUES(#{tbReimburse.createMan},now(),#{tbReimburse.departmentId},#{tbReimburse.nextDealMan},#{tbReimburse.event},#{tbReimburse.totalCount},#{tbReimburse.statusId})
+	</insert>
+	<!--新增报销详情表 -->
+	<insert id="addReimburseDetail">
+		INSERT INTO
+		`reimburse_detail`(`mainId`,`subTotal`,`desc`,`pictureName`,`picturePath`)
+		VALUES
+		<foreach collection="ReimburseDetails" item="temp"
+			separator=",">
+			(#{reimburseId},#{temp.subTotal},#{temp.subTotal},#{temp.pictureName},#{temp.picturePath})
+		</foreach>
+	</insert>
+	<!--新增审批表 -->
+	<insert id="addTbCheck">
+		INSERT INTO
+		`tb_check`(`bizId`,`typeId`,`checkTime`,checkMan,`checkResult`,`checkComment`)
+		VALUES(#{reimburseId},#{tbCheck.typeId},now(),#{tbCheck.checkMan},#{tbCheck.checkResult},#{tbCheck.checkComment})
+	</insert>
+	<!--修改报销表 -->
+	<update id="modifyReimbursement">
+		UPDATE `tb_reimburse` 
+		<set>
+			<if test="tbReimburse.event != null ">
+			`event`=#{tbReimburse.event} ,
+			</if>
+			<if test="tbReimburse.statusId != null">
+				statusId=#{tbReimburse.statusId} ,
+			</if>
+			<if test="tbReimburse.totalCount != null">
+				 `totalCount`=#{tbReimburse.totalCount} ,
+			</if>
+			<if test="tbReimburse.nextDealMan != null">
+				nextDealMan=#{tbReimburse.nextDealMan} ,
+			</if>
+		</set>
+		WHERE `reimburseId`=#{tbReimburse.reimburseId}
+	</update>
+	<!-- 删除报销详情表 -->
+	<delete id="removeReimburseDetail">
+		DELETE FROM `reimburse_detail` WHERE
+		`mainId`=#{mainId}
+	</delete>
+	<!-- -->
+	<!-- <update id="modifyTbCheck"> UPDATE `tb_check` SET `checkMan`=#{tbCheck.checkMan},`checkComment`=#{tbCheck.checkComment},`checkResult`=#{tbCheck.checkResult} 
+		WHERE `checkId`=#{tbCheck.checkId} </update> -->
+		
+	<!-- 删除报销表 -->
+	<delete id="removeReimburse">
+		DELETE FROM `reimburse_detail` WHERE `mainId`=#{reimburseId};
+ 		DELETE FROM `tb_reimburse` WHERE `reimburseId`=#{reimburseId};
+	</delete>
+	
+	<insert id="addCount">
+		 INSERT INTO `tb_count`(`money`,`year`,`month`,`departmentId`,`employeeId`,`departmentName`,`employeeName`)
+	 	 VALUES (#{tbCount.money},#{tbCount.year},#{tbCount.month},#{tbCount.departmentId},#{tbCount.employeeId},#{tbCount.departmentName},#{tbCount.employeeName})
+	</insert>
+</mapper>

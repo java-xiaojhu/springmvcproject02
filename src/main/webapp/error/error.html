@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>错误页面</title>
+		<link rel="stylesheet" href="/springmvcproject02/css/bootstrap.min.css" />
+	</head>
+	<body>
+		<div class="container-fluid" style="background-color: #0099CC; height: 100%;" >
+			<div class="row col-md-12 text-center hezi">
+				<h1 style="font-family: 楷体; color: #fff;">当前页面报错啦！！！</h1>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="/springmvcproject02/js/jquery-1.12.4.js" ></script>
+	<script type="text/javascript" src="/springmvcproject02/js/bootstrap.min.js" ></script>
+	<script>
+		var allHeight = Math.max(document.documentElement.scrollHeight, document.documentElement.clientHeight) + "px"; 
+		$(".container-fluid").css("height",allHeight);
+		$("h1").css("margin-top","350px");
+	</script>
+</html>

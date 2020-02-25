@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.accp.springmvc.dao.ILeaveDao">
+	<sql id="selall">
+		select * from
+	</sql>
+	<resultMap type="LeaveVo" id="tbLeave">
+		<id property="leaveId" column="leaveId" />
+		<result property="createMan" column="createMan" />
+		<result property="createName" column="createName" />
+		<result property="positionId" column="positionId" />
+		<result property="departmentId" column="departmentId" />
+		<result property="departmentName" column="departmentName" />
+		<result property="createTime" column="createTime" />
+		<result property="startTime" column="startTime" />
+		<result property="endTime" column="endTime" />
+		<result property="resultName" column="resultName" />
+		<result property="nextDealMan" column="nextDealMan" />
+		<result property="nextDealName" column="nextDealName" />
+		<result property="event" column="event" />
+		<result property="totalCount" column="totalCount" />
+		<result property="statusId" column="statusId" />
+		<result property="statusName" column="statusName" />
+		<result property="checkTime" column="checkTime" />
+		<collection property="tbChecks" select="selectChecks"
+			column="leaveId" />
+	</resultMap>
+
+	<!-- 请假新增 -->
+	<insert id="addLeave">
+		INSERT INTO
+		`tb_leave`(`createMan`,`departmentId`,`createTime`,`startTime`,`endTime`,`nextDealMan`,`event`,`totalCount`,`statusId`)
+		VALUES (
+		#{tbLeave.createMan},#{tbLeave.departmentId},now(),#{tbLeave.startTime},#{tbLeave.endTime},#{tbLeave.nextDealMan},
+		#{tbLeave.event},#{tbLeave.totalCount},#{tbLeave.statusId}
+		)
+	</insert>
+
+
+
+	<!-- 修改请假表 -->
+
+	<update id="updateLeaveById">
+		UPDATE `tb_leave`
+		SET`nextDealMan`=#{tbLeave.nextDealMan},`statusId`=#{tbLeave.statusId}
+		WHERE `leaveId`=#{tbLeave.leaveId}
+	</update>
+
+	<!-- 查询请假表 -->
+
+	<select id="selectLeaveByid" resultMap="tbLeave">
+		SELECT leaveId,createMan ,employee.`employeeName` AS createName,employee.`positionId` as positionId,department.departmentId as departmentId
+		,departmentName,createTime,startTime,endTime, nextDealMan,a.nName AS nextDealName,`event`,totalCount,tb_leave.statusId,statusName,`checkTime`,resultName
+		FROM `tb_leave`
+		INNER JOIN employee ON employee.`employeeId`
+		=tb_leave.`createMan`
+		LEFT JOIN (SELECT employeeId ,
+		employee.`employeeName` AS nName FROM
+		employee WHERE employeeId
+		IN(SELECT tb_leave.`nextDealMan` FROM
+		tb_leave) ) AS a ON
+		a.`employeeId` = tb_leave.`nextDealMan`
+		LEFT JOIN (SELECT `bizId`
+		,`checkTime`,`resultName` FROM `tb_check` INNER
+		JOIN `check_result` ON
+		`check_result`.`resultId`=`tb_check`.`checkResult` WHERE `checkId`IN(
+		SELECT MAX(checkId) FROM `tb_check` WHERE `typeId`=1 GROUP BY `bizId`
+		) ) AS b ON b.`bizId`=`tb_leave`.`leaveId`
+		INNER JOIN `department` ON
+		`department`.`departmentId`
+		=tb_leave.`departmentId`
+		INNER JOIN
+		`tb_status` ON tb_status.`statusId`=tb_leave.`statusId`
+		<where>
+			<if test="positionId!=null">
+				<if test="positionId==1">
+					createMan IN (SELECT `employeeId` FROM `employee` WHERE
+					`departmentId`=#{departmentId} AND
+					`positionId`IN (2,1) )
+				</if>
+				<if test="positionId==2">
+					createMan=#{createMan}
+				</if>
+			</if>
+			<if test="createName != '' ">
+				and employee.employeeName like '%${createName}%'
+			</if>
+			<if test="statusId!=null"> and tb_leave.statusId=#{statusId} </if>
+			<if test="starttime != '' and endtime != ''"> and createTime &gt;=#{starttime}
+				AND createTime
+				&lt;=#{endtime} </if>
+			<if test="starttime ==  '' and endtime!= ''">
+				and createTime &lt;=#{endtime} </if>
+			<if test="starttime !=  '' and endtime 
+				==  ''"> and createTime &gt;=#{starttime} </if>
+			<if test="leaveId!= null">
+				and leaveId=#{leaveId}
+			</if>
+
+		</where>
+		ORDER BY createTime DESC
+	</select>
+
+	<select id="selectChecks" resultType="CheckVo">
+		SELECT checkId, bizId,
+		typeId,checkTime,checkMan,
+		employee.employeeName,checkResult,checkComment,check_result.resultName FROM
+		`tb_check`
+		INNER
+		JOIN `employee` ON employee.`employeeId`
+		=tb_check.`checkMan`
+		INNER JOIN
+		`check_result` ON
+		`check_result`.`resultId`=tb_check.`checkResult`
+		WHERE
+		`tb_check`.`bizId`=#{0} AND tb_check.`typeId`=1
+	</select>
+
+	<!-- 查询出当前用户的上一级 -->
+	<select id="selectNextMan" resultType="Integer">
+		SELECT `employeeId` FROM `employee`
+		WHERE
+		<if test="positionId!=null">
+			`positionId`=1 AND
+		</if>
+		`departmentId`=#{departmentId}
+	</select>
+		<!-- 查询请假 -->
+	<select id="selectTbCheck" resultType="TbLeave">
+		<include refid="selall"/> tb_leave where leaveId=#{leaveId}
+	</select>
+	
+	<!-- 查询状态 -->
+	<select id="selectStude" resultType="TbStatus">
+		<include refid="selall"/>`tb_status`
+	</select>
+
+</mapper>

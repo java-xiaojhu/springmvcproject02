@@ -1,0 +1,55 @@
+/*头部样式*/
+.head_back {
+	background-image: url(img/logo.gif);
+	background-repeat: no-repeat;
+	background-position: left center;
+	background-size: contain;
+	height: 50px;
+	border-bottom: 5px solid #5083ae;
+}
+
+.head_nav {
+	background: #dae8f5;
+}
+
+.userName {
+	font-weight: bold;
+	color: red;
+}
+
+.head_nav div p {
+	padding-top: 10px;
+}
+/*主体样式*/
+a:hover{
+	text-decoration: none;
+}
+.num{
+	padding: 0px 5px 0px 5px;
+}
+.media-heading{
+	margin-bottom: 10px;
+}
+.list-group-item{
+	padding: 20px;
+	border: none;
+	border-top: 1px solid #e4e5e0;
+}
+.list-group-item:last-child{
+	border-bottom: 1px solid #e4e5e0;
+}
+.pagination li a{
+	margin-left: 20px;
+}
+.list_cy{
+	font-size: 18px;
+	float: right;
+	margin-top: 10px;
+	font-size: 14px;
+}
+.weihui{
+	font-size: 18px;
+	float: right;
+	margin-top: 10px;
+	font-size: 14px;
+}

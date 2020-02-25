@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>请假申请</title>
+<!-- Bootstrap Styles-->
+<link href="/springmvcproject02/assets/css/bootstrap.css"
+	rel="stylesheet" />
+<!-- FontAwesome Styles-->
+<link href="/springmvcproject02/assets/css/font-awesome.css"
+	rel="stylesheet" />
+<!-- Morris Chart Styles-->
+<link href="/springmvcproject02/assets/js/morris/morris-0.4.3.min.css"
+	rel="stylesheet" />
+<!-- Custom Styles-->
+<link href="/springmvcproject02/assets/css/custom-styles.css"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="/springmvcproject02/assets/js/toastr/toastr.css" />
+<!-- Google Fonts-->
+<link href='https://fonts.googleapis.com/css?family=Open+Sans'
+	rel='stylesheet' type='text/css' />
+<link rel="stylesheet" type="text/css" href="../css/index.css">
+<script type="text/javascript" src="../js/vue.js"></script>
+</head>
+
+<body>
+	<div id="wrapper">
+		<nav class="navbar navbar-default top-navbar topdao" role="navigation">
+			<topdao></topdao>
+		</nav>
+		<!--/. NAV TOP  -->
+		<nav class="navbar-default navbar-side" role="navigation">
+			<div id="sideNav" href="">
+				<i class="fa fa-caret-right"></i>
+			</div>
+			<div class="sidebar-collapse" id="myleftMeun">
+				<hm :user="user"></hm>
+			</div>
+		</nav>
+		<!-- /. NAV SIDE  -->
+		<div id="page-wrapper">
+			<div id="page-inner">
+				<div class="row">
+					<div class="col-md-12">
+						<ol class="breadcrumb">
+							<li class="active">查看请假</li>
+						</ol>
+					</div>
+				</div>
+				<!-- /. ROW  -->
+				<div class="row">
+					<div class="main" id="main">
+						<!-- MAIN CONTENT -->
+						<div class="main-content">
+							<div class="container-fluid">
+								<div id="toastr-demo" class="panel panel-default">
+									<div class="panel-heading">请假列表</div>
+									<div class="panel-body">
+											<div class="row col-md-12">
+											<div class="row col-md-12 form-inline">
+												<div class="form-group">
+													<label for="exampleInputName2">请假状态 </label> <select
+														class="form-control" v-model="statusId">
+														<option  value="">全部</option>
+														<option v-for="stu in stute" :value="stu.statusId">{{stu.statusName}}</option>
+													</select>
+												</div>
+												<div class="form-group">
+													<label for="exampleInputName2">员工姓名:</label> <input v-model="createName"
+														type="text" class="form-control" placeholder="支持模糊查询" name="empName">
+												</div>
+												<div class="form-group">
+													<label for="exampleInputName2">开始时间:</label> <input
+														type="date" v-model="starttime" class="form-control" name="starttime">
+												</div>
+												<div class="form-group">
+													<label for="exampleInputEmail2">结束时间:</label> <input
+														type="date" v-model="endtime" class="form-control" name="endtime">
+												</div>
+												<button class="btn btn-default" @click="tiaojian">查询</button>
+											</div>
+										</div>
+										<br> <br>
+									<div class="table-responsive">
+										<table class="table table-striped table-bordered table-hover">
+											<thead>
+												<tr>
+													<th class="text-center">编号</th>
+													<th class="text-center">名称</th>
+													<th class="text-center">发起时间</th>
+													<th class="text-center">审批时间</th>
+													<th class="text-center">审批意见</th>
+													<th class="text-center">待处理人</th>
+													<th class="text-center">审批状态</th>
+													<th class="text-center">操作</th>
+												</tr>
+											</thead>
+											<tbody class="text-center data">
+												<tr v-for="leave in leaves.list">
+													<td>{{leave.leaveId}}</td>
+													<td>{{leave.createName}}</td>
+													<td>{{leave.createTime}}</td>
+													<td>{{leave.checkTime}}</td>
+													<td>{{leave.resultName}}</td>
+													<td>{{leave.nextDealName}}</td>
+													<td>{{leave.statusName}}</td>
+													<td><a href="javascript:void(0);"
+														v-if="user.employeeId==leave.nextDealMan"
+														class="btn btn-success btn-xs leavecheck"> <font
+															@click="aclick('审批',leave)"
+															v-if="(user.positionId==1 || user.positionId==0)  && leave.statusId==2">
+																审批</font> <font @click="aclick('存档',leave)"
+															v-else-if="user.positionId==4  && leave.statusId==4">
+																存档 </font>
+													</a> <a href="javascript:void(0);" @click="aclick('查看',leave)"
+														class="btn btn-success btn-xs">查看 </a></td>
+												</tr>
+											</tbody>
+											<tfoot>
+												<tr>
+													<td colspan="8">
+														<div class="row" style="padding: 0px; margin: 0px;">
+															<div class="col-md-4 text-center"
+																style="padding: 6px 0px;">
+																第<span id="pageNum">{{leaves.pageNum}}</span>页/共<span
+																	id="totle">{{leaves.pages}}</span>页
+															</div>
+															<div class="col-md-4 text-center">
+																<a href="javascript:void(0);" @click="first"
+																	class="btn btn-default btn-sm"> <font
+																	style="vertical-align: inherit;"> <font
+																		style="vertical-align: inherit;">首页</font>
+																</font>
+																</a> <a href="javascript:void(0);" @click="prev"
+																	class="btn btn-default btn-sm"> <font
+																	style="vertical-align: inherit;"> <font
+																		style="vertical-align: inherit;">上一页</font>
+																</font>
+																</a> <a href="javascript:void(0);" v-on:click="next"
+																	class="btn btn-default btn-sm"> <font
+																	style="vertical-align: inherit;"> <font
+																		style="vertical-align: inherit;">下一页</font>
+																</font>
+																</a> <a href="javascript:void(0);" @click="last"
+																	class="btn btn-default btn-sm"> <font
+																	style="vertical-align: inherit;"> <font
+																		style="vertical-align: inherit;">尾页</font>
+																</font>
+																</a>
+															</div>
+															<div class="col-md-4 text-center"
+																style="padding: 6px 0px;">
+																共<span id="">{{leaves.total}}</span>条记录
+															</div>
+														</div>
+													</td>
+												</tr>
+
+											</tfoot>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- END MAIN CONTENT -->
+				</div>
+			</div>
+		</div>
+		<!-- /. PAGE INNER  -->
+	</div>
+	<!-- /. PAGE WRAPPER  -->
+	</div>
+	<!-- /. WRAPPER  -->
+	<!-- JS Scripts-->
+	<!-- jQuery Js -->
+	<script src="/springmvcproject02/assets/js/jquery-1.10.2.js"></script>
+	<!-- Bootstrap Js -->
+	<script src="/springmvcproject02/assets/js/bootstrap.min.js"></script>
+
+	<!-- Metis Menu Js -->
+	<script src="/springmvcproject02/assets/js/jquery.metisMenu.js"></script>
+	<!-- Morris Chart Js -->
+	<script src="/springmvcproject02/assets/js/morris/raphael-2.1.0.min.js"></script>
+	<script src="/springmvcproject02/assets/js/morris/morris.js"></script>
+
+	<script src="/springmvcproject02/assets/js/easypiechart.js"></script>
+	<script src="/springmvcproject02/assets/js/easypiechart-data.js"></script>
+
+	<script
+		src="/springmvcproject02/assets/js/Lightweight-Chart/jquery.chart.js"></script>
+
+	<!-- Custom Js -->
+	<script src="/springmvcproject02/assets/js/custom-scripts.js"></script>
+	<script type="text/javascript"
+		src="/springmvcproject02/assets/js/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+	<script type="text/javascript"
+		src="/springmvcproject02/assets/js/toastr/toastr.min.js"></script>
+	<script type="text/javascript"
+		src="/springmvcproject02/assets/js/scripts/klorofil-common.js"></script>
+
+</body>
+<script type="text/javascript"
+	src="/springmvcproject02/js/vuejs/index.js"></script>
+<script type="text/javascript"
+	src="/springmvcproject02/js/vuejs/leftMeun.js"></script>
+<script type="text/javascript" src="/springmvcproject02/js/vuejs/top.js"></script>
+<script>
+	
+	var example = undefined;
+	console.log(JSON.parse(window.sessionStorage.getItem("user")))
+	if (example === undefined) {
+		example = new Vue({
+		data : {
+			leaves : {},
+			user : JSON.parse(window.sessionStorage.getItem("user")),
+			stute:[],
+			starttime:'',
+			endtime:'',
+			createName:'',
+			statusId:''
+			
+		},
+		methods : {
+			first : function() {
+				this.dataloader("/"+ this.leaves.firstPage+ "/10/0/null/null/null/0");
+			},
+			prev : function() {
+				this.dataloader("/"+ this.leaves.prePage+ "/10/0/null/null/null/0");
+			},
+			next : function() {
+				this.dataloader("/"+ this.leaves.nextPage+ "/10/0/null/null/null/0");
+			},
+			last : function() {
+				this.dataloader("/"+ this.leaves.lastPage+ "/10/0/null/null/null/0");
+			},
+			aclick : function(textvalue, leave) {
+				if (textvalue == "审批") {
+					leave["logerid"] = "1";
+					window.sessionStorage
+							.setItem("leave",JSON.stringify(leave))
+					location.href = "/springmvcproject02/ui/LeaveCheck.html";
+				} else if (textvalue == "存档") {
+					leave["logerid"] = "2";
+					window.sessionStorage
+							.setItem("leave",JSON.stringify(leave))
+					location.href = "/springmvcproject02/ui/LeaveCheck.html";
+				} else if (textvalue == "查看") {
+					leave["logerid"] = "3";
+					window.sessionStorage.setItem("leave",JSON.stringify(leave))
+					location.href = "/springmvcproject02/ui/LeaveCheck.html";
+				}
+			},
+			 dataloader(centent) {
+				let _this=this;
+					$.ajax({
+						type : "get",
+						url : "/springmvcproject02/api/LeaveServlets/findLeaves"+ centent,
+						dataType : "JSON",
+						success : function(data) {
+							console.log(data)	
+							_this.leaves=data;
+						}
+					});
+				},
+				tiaojian(){
+					if(this.createName==''){
+						this.createName=0;
+					}
+					if(this.starttime==''){
+						this.starttime=0;
+					}
+					if(this.endtime==''){
+						this.endtime=0;
+					}
+					if(this.statusId==''){
+						this.statusId=0;
+					}					
+					var centent=`/1/10/0/${this.starttime}/${this.endtime}/${this.createName}/${this.statusId}`;
+					console.log(centent)
+					this.dataloader(centent);
+					this.createName='';
+					this.starttime='';
+					this.endtime='';
+				}
+		},mounted(){
+			let _this=this;
+			var dd= new Promise(function(resolve, reject) { 
+				$.getJSON(`/springmvcproject02/api/LeaveServlets/state`,function(Pro){					
+		    		console.log(Pro)
+		    		resolve(Pro);
+		    	});
+		    })
+			dd.then(function(stues){
+				_this.stute=stues;
+	    		_this.dataloader("/1/10/0/null/null/null/0");
+	    	});
+				
+		}
+		}).$mount(".panel-body");
+		;
+	} else {
+		Object.assign(example.leaves, data)
+	}
+	
+</script>
+<script>
+	var vm = new Vue({
+		el : "#myleftMeun",
+		data : {
+			user : JSON.parse(window.sessionStorage.getItem("user"))
+		}
+	});
+	var vm1 = new Vue({
+		el : ".topdao"
+	});
+</script>
+</html>

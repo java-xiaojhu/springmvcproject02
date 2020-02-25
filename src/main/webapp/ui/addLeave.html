@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>请假申请</title>
+<!-- Bootstrap Styles-->
+<link href="/springmvcproject02/assets/css/bootstrap.css"
+	rel="stylesheet" />
+<!-- FontAwesome Styles-->
+<link href="/springmvcproject02/assets/css/font-awesome.css"
+	rel="stylesheet" />
+<!-- Morris Chart Styles-->
+<link href="/springmvcproject02/assets/js/morris/morris-0.4.3.min.css"
+	rel="stylesheet" />
+<!-- Custom Styles-->
+<link href="/springmvcproject02/assets/css/custom-styles.css"
+	rel="stylesheet" />
+<link rel="stylesheet" href="/springmvcproject02/assets/js/toastr/toastr.css" />
+<!-- Google Fonts-->
+<link href='https://fonts.googleapis.com/css?family=Open+Sans'
+	rel='stylesheet' type='text/css' />
+<link rel="stylesheet" type="text/css" href="../css/index.css">
+<script type="text/javascript" src="../js/vue.js"></script>
+</head>
+
+<body>
+	<div id="wrapper">
+		<nav class="navbar navbar-default top-navbar topdao" role="navigation">
+			<topdao></topdao>
+		</nav>
+		<!--/. NAV TOP  -->
+		<nav class="navbar-default navbar-side" role="navigation">
+			<div id="sideNav" href="">
+				<i class="fa fa-caret-right"></i>
+			</div>
+			<div class="sidebar-collapse" id="myleftMeun">
+				<hm :user="user"></hm>
+			</div>
+		</nav>
+		<!-- /. NAV SIDE  -->
+		<div id="page-wrapper">
+			<div id="page-inner">
+				<div class="row">
+					<div class="col-md-12">
+						<ol class="breadcrumb">
+							<li class="active">查看请假</li>
+						</ol>
+					</div>
+				</div>
+				<!-- /. ROW  -->
+				<div class="row">
+					<div class="main">
+						<!-- MAIN CONTENT -->
+						<div class="main-content">
+							<div class="container-fluid">
+								<div id="toastr-demo" class="panel panel-default">
+									<div class="panel-heading">请假申请</div>
+									<div class="panel-body">
+										<table class="table table-bordered">
+											<caption>基本信息</caption>
+											<tbody>
+												<tr>
+													<td class=" form-horizontal" style="padding: 8px 0px;"><span
+														class="col-sm-2 control-label"
+														style="margin: 0px; padding: 7px 0px 0px;">姓名:</span>
+														<div class="col-sm-10">
+															<span class="form-control nwinput"
+																style="border: none; box-shadow: none; -webkit-box-shadow: none;">{{user.employeeName}}</span>
+														</div></td>
+													<td class=" form-horizontal" style="padding: 8px 0px;"><span
+														class="col-sm-2 control-label"
+														style="margin: 0px; padding: 7px 0px 0px;">部门:</span>
+														<div class="col-sm-10">
+															<span class="form-control nwinput"
+																style="border: none; box-shadow: none; -webkit-box-shadow: none;">{{user.departmentName}}</span>
+														</div></td>
+												</tr>
+												<tr>
+													<td class=" form-horizontal" style="padding: 8px 0px;"><span
+														class="col-sm-2 control-label"
+														style="margin: 0px; padding: 7px 0px 0px;">开始时间:</span>
+														<div class="col-sm-10">
+															<input type="date" class="form-control" style=""
+																name="startDate" id="startDate" class="nwinput">
+														</div></td>
+													<td class=" form-horizontal" style="padding: 8px 0px;"><span
+														class="col-sm-2 control-label"
+														style="margin: 0px; padding: 7px 0px 0px;">结束时间:</span>
+														<div class="col-sm-10">
+															<input type="date" class="form-control" name="endDate"
+																id="endDate" class="nwinput">
+														</div></td>
+												</tr>
+												<tr>
+													<td class=" form-horizontal"
+														style="padding: 8px 0px 8px 33px;" colspan="2">请假天数：
+														<input type="hidden" name="totalCount" value="1">
+														<span id="totalCount">1</span>
+													</td>
+												</tr>
+												<tr>
+													<td colspan="2"><span
+														style="position: relative; top: -30px;">请假事由：</span> <textarea
+															id="textarea" name="event" rows="5" cols="45"
+															style="width: 90%; resize: none;"></textarea></td>
+
+												</tr>
+
+												<!--表单提交行-->
+												<tr>
+													<td colspan="4" class=" text-center"><a href="javascript:void(0);" @click="submits"
+														class="btn btn-default btn-success  submit"> <font
+															style="vertical-align: inherit;"> <font
+																style="vertical-align: inherit;">提交</font>
+														</font>
+													</a> <a href="javascript:void(0);" class="btn btn-default return"> <font
+															style="vertical-align: inherit;"> <font
+																style="vertical-align: inherit;">返回</font>
+														</font>
+													</a></td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- END MAIN CONTENT -->
+					</div>
+				</div>
+			</div>
+			<!-- /. PAGE INNER  -->
+		</div>
+		<!-- /. PAGE WRAPPER  -->
+	</div>
+	<!-- /. WRAPPER  -->
+	<!-- JS Scripts-->
+	<!-- jQuery Js -->
+	<script src="/springmvcproject02/assets/js/jquery-1.10.2.js"></script>
+	<!-- Bootstrap Js -->
+	<script src="/springmvcproject02/assets/js/bootstrap.min.js"></script>
+
+	<!-- Metis Menu Js -->
+	<script src="/springmvcproject02/assets/js/jquery.metisMenu.js"></script>
+	<!-- Morris Chart Js -->
+	<script src="/springmvcproject02/assets/js/morris/raphael-2.1.0.min.js"></script>
+	<script src="/springmvcproject02/assets/js/morris/morris.js"></script>
+
+	<script src="/springmvcproject02/assets/js/easypiechart.js"></script>
+	<script src="/springmvcproject02/assets/js/easypiechart-data.js"></script>
+
+	<script
+		src="/springmvcproject02/assets/js/Lightweight-Chart/jquery.chart.js"></script>
+
+	<!-- Custom Js -->
+	<script src="/springmvcproject02/assets/js/custom-scripts.js"></script>
+	<script type="text/javascript"
+		src="/springmvcproject02/assets/js/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+	<script type="text/javascript"
+		src="/springmvcproject02/assets/js/toastr/toastr.min.js"></script>
+	<script type="text/javascript"
+		src="/springmvcproject02/assets/js/scripts/klorofil-common.js"></script>
+</body>
+<script type="text/javascript" src="/springmvcproject02/js/vuejs/index.js"></script>
+<script type="text/javascript" src="/springmvcproject02/js/vuejs/leftMeun.js"></script>
+<script type="text/javascript" src="/springmvcproject02/js/vuejs/top.js"></script>
+<script>
+	var vm = new Vue({
+		el : "#myleftMeun",
+		data : {
+			user:JSON.parse(window.sessionStorage.getItem("user"))
+		}
+	});
+	var vm1 = new Vue({
+		el : ".topdao"
+	});
+</script>
+
+<script>
+	$(function() {
+		$("#startDate").change(function() {
+			var sDate = $(this).val();
+			var eDate = $("#endDate").val();
+			sDate = new Date(sDate.replace(/-/g, "/"));
+			if (sDate < new Date()) {
+				alert("请假日期不正确！");
+				$(this).val("");
+				return;
+			}
+			if (eDate != "") {
+				eDate = new Date(eDate.replace(/-/g, "/"));
+				var days = eDate.getTime() - sDate.getTime();
+				var time = parseInt(days / (1000 * 60 * 60 * 24));
+				if (time <= 0) {
+					alert("请选择正确的日期");
+					$(this).val("");
+					return false;
+				} else {
+					$("#totalCount").text(time).val(time);
+					$("[name='totalCount']").val(time);
+				}
+			}
+		});
+		$("#endDate").change(function() {
+			var sDate = $("#startDate").val();
+			var eDate = $(this).val();
+			if (sDate != "") {
+				sDate = new Date(sDate.replace(/-/g, "/"));
+				eDate = new Date(eDate.replace(/-/g, "/"));
+				var days = eDate.getTime() - sDate.getTime();
+				var time = parseInt(days / (1000 * 60 * 60 * 24));
+				if (time <= 0) {
+					alert("请选择正确的日期");
+					$(this).val("");
+					return false;
+				} else {
+					$("#totalCount").text(time);
+					$("[name='totalCount']").val(time);
+				}
+			}
+		});
+	});
+	var vmmain = new Vue({
+		data : {
+			user : JSON.parse(window.sessionStorage.getItem("user"))
+		},methods:{
+			submits() {
+				var event = $("#textarea").val();
+				if (event == "") {
+					alert("请输入请假事由");
+					return false;
+				}
+				var tbLeave = {};
+				tbLeave["startTime"] = $.trim($("#startDate").val());
+				tbLeave["endTime"] = $.trim($("#endDate").val());
+				tbLeave["event"] = $.trim($("#textarea").val());
+				tbLeave["totalCount"] = $.trim($("[name='totalCount']").val());
+				console.log(JSON.stringify(tbLeave))
+				$.ajax({
+					type : "post",
+					url : "/springmvcproject02/api/LeaveServlets/tbLeave",
+					data : JSON.stringify(tbLeave),
+					contentType : "application/json;charset=UTF-8",//非常重要
+					dataType : "JSON",
+					success : function(data) {
+						console.log(data)
+						if (data.code == "200") {
+							//验证成功跳转页面
+							location.href = "" + data.msg + "";
+						} else if (data.code == "400") {
+							location.href = "" + data.msg + "";
+						}
+					}
+				});
+
+			}
+		}
+		
+
+	}).$mount(".panel-body");
+</script>
+
+</html>

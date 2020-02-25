@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.accp.springmvc.dao.IMessageDao">
+	<sql id="selall">
+		select * from
+	</sql>
+	<!-- 查询 -->
+	<select id="selectMessage" resultType="Chat">
+		<include refid="selall" />
+		chat
+	</select>
+	<!-- 信息新增 -->
+	<insert id="addMessage">
+		INSERT INTO
+		`chat`(`cUserSend`,`cUserTake`,`cContent`,`cStatus`)
+		VALUES(#{chat.cUserSend},#{chat.cUserTake},#{chat.cContent},0);
+	</insert>
+	<!-- 修改信息状态 -->
+	<update id="updateMessage">
+		update chat set cStatus =1 where cUserTake=#{sUser} and
+		cUserSend=#{tUser}
+	</update>
+	<!--  -->
+	<select id="selectTUserMessage" resultType="ChatVo">
+		SELECT COUNT(*) as number,cUserSend,(
+		SELECT `employeeName` FROM `employee` AS u WHERE u.employeeId=c.`cUserSend`
+		) AS userName FROM chat AS c WHERE cUserTake=#{userTock} AND cStatus =0 GROUP BY
+		cUserSend
+	</select>
+</mapper>

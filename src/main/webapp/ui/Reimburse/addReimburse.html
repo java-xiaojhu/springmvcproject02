@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>请假申请</title>
+<!-- Bootstrap Styles-->
+<link href="/springmvcproject02/assets/css/bootstrap.css"
+	rel="stylesheet" />
+<!-- FontAwesome Styles-->
+<link href="/springmvcproject02/assets/css/font-awesome.css"
+	rel="stylesheet" />
+<!-- Morris Chart Styles-->
+<link href="/springmvcproject02/assets/js/morris/morris-0.4.3.min.css"
+	rel="stylesheet" />
+<!-- Custom Styles-->
+<link href="/springmvcproject02/assets/css/custom-styles.css"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="/springmvcproject02/assets/js/toastr/toastr.css" />
+<!-- Google Fonts-->
+<link href='https://fonts.googleapis.com/css?family=Open+Sans'
+	rel='stylesheet' type='text/css' />
+<link rel="stylesheet" type="text/css" href="../../css/index.css">
+<script type="text/javascript" src="../../js/vue.js"></script>
+</head>
+
+<body>
+	<div id="wrapper">
+		<nav class="navbar navbar-default top-navbar topdao" role="navigation">
+			<topdao></topdao>
+		</nav>
+		<!--/. NAV TOP  -->
+		<nav class="navbar-default navbar-side" role="navigation">
+			<div id="sideNav" href="">
+				<i class="fa fa-caret-right"></i>
+			</div>
+			<div class="sidebar-collapse" id="myleftMeun">
+				<hm :user="user"></hm>
+			</div>
+		</nav>
+		<!-- /. NAV SIDE  -->
+		<div id="page-wrapper">
+			<div id="page-inner">
+				<div class="row">
+					<div class="col-md-12">
+						<ol class="breadcrumb">
+							<li class="active">查看请假</li>
+						</ol>
+					</div>
+				</div>
+				<!-- /. ROW  -->
+				<div class="row">
+					<div class="main">
+						<!-- MAIN CONTENT -->
+						<div class="main-content">
+							<div class="container-fluid">
+								<div id="toastr-demo" class="panel panel-default">
+									<div class="panel-heading">请假列表</div>
+									<div class="panel-body">
+										<table class="table table-bordered">
+											<caption>基本信息</caption>
+											<tbody>
+												<tr>
+													<td>编号:<span>{{user.employeeId}}</span></td>
+													<td>填写人:<span>{{user.employeeName}}</span></td>
+													<td>部门:<span>{{user.departmentName}}</span></td>
+													<td>职位:<span>{{user.positionName}}</span></td>
+												</tr>
+												<tr>
+													<td colspan="4">总金额: <span name="totalCount"
+														id="totalAccount">0</span></td>
+												</tr>
+											</tbody>
+										</table>
+										<table id="myTable" class="addform-base table"
+											style="border-top: dashed 1px black;">
+											<thead>
+												<tr>
+													<td>项目说明</td>
+													<td>项目金额</td>
+													<td>凭据截图</td>
+													<td>操作</td>
+												</tr>
+											</thead>
+											<tbody>
+
+											</tbody>
+										</table>
+										<table id="detailTable" class="addform-base table">
+											<tbody>
+												<tr>
+													<td><input type="text" id="item"></td>
+													<td><input type="text"
+														name="claimVoucherDetail.account" id="account"></td>
+													<td><input type="file" name="imgFile" id="desc1">
+													</td>
+													<td><a href="javascript:void(0);"
+														class="btn btn-success btn-xs" id="AddRow">添加 </a></td>
+												</tr>
+											</tbody>
+										</table>
+										<table class="table">
+											<tbody class="text-center">
+												<tr>
+													<td colspan="2"><span
+														style="position: relative; top: -30px;">请假事由：</span> <textarea
+															id="textarea" name="event" rows="5" cols="45"
+															style="width: 90%; resize: none;"></textarea></td>
+
+												</tr>
+												<tr>
+													<td colspan="4"><a href="javascript:void(0);"
+														class="btn btn-default btn-success " @click="tijiao('保存')"
+														style="width: 100px;"> <font
+															style="vertical-align: inherit;"> <font
+																style="vertical-align: inherit;">保存</font>
+														</font>
+													</a> <a href="javascript:void(0);" @click="tijiao('提交')"
+														class="btn btn-default btn-success " style="width: 150px;">
+															<font style="vertical-align: inherit;"> <font
+																style="vertical-align: inherit;">提交</font>
+														</font>
+													</a> <a href="javascript:void(0);" class="btn btn-default"
+														@click="fanhui"> <font
+															style="vertical-align: inherit;"> <font
+																style="vertical-align: inherit;">返回</font>
+														</font>
+													</a> <!--<input type="button" id="1" name="1" value="保存" onclick="submitClaimVoucher('保存')" class="submit_01"> 
+															<input type="button" id="2" name="2" value="提交" class="submit_01" onclick="submitClaimVoucher('提交')"> 
+															<input type="button" value="返回" onclick="window.history.go(-1)" class="submit_01">-->
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- END MAIN CONTENT -->
+					</div>
+				</div>
+			</div>
+			<!-- /. PAGE INNER  -->
+		</div>
+		<!-- /. PAGE WRAPPER  -->
+	</div>
+	<!-- /. WRAPPER  -->
+	<!-- JS Scripts-->
+	<!-- jQuery Js -->
+	<script src="/springmvcproject02/assets/js/jquery-1.10.2.js"></script>
+	<!-- Bootstrap Js -->
+	<script src="/springmvcproject02/assets/js/bootstrap.min.js"></script>
+
+	<!-- Metis Menu Js -->
+	<script src="/springmvcproject02/assets/js/jquery.metisMenu.js"></script>
+	<!-- Morris Chart Js -->
+	<script src="/springmvcproject02/assets/js/morris/raphael-2.1.0.min.js"></script>
+	<script src="/springmvcproject02/assets/js/morris/morris.js"></script>
+
+	<script src="/springmvcproject02/assets/js/easypiechart.js"></script>
+	<script src="/springmvcproject02/assets/js/easypiechart-data.js"></script>
+
+	<script
+		src="/springmvcproject02/assets/js/Lightweight-Chart/jquery.chart.js"></script>
+
+	<!-- Custom Js -->
+	<script src="/springmvcproject02/assets/js/custom-scripts.js"></script>
+	<script type="text/javascript"
+		src="/springmvcproject02/assets/js/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+	<script type="text/javascript"
+		src="/springmvcproject02/assets/js/toastr/toastr.min.js"></script>
+	<script type="text/javascript"
+		src="/springmvcproject02/assets/js/scripts/klorofil-common.js"></script>
+
+</body>
+<script type="text/javascript" src="/springmvcproject02/js/vuejs/index.js"></script>
+<script type="text/javascript" src="/springmvcproject02/js/vuejs/leftMeun.js"></script>
+<script type="text/javascript" src="/springmvcproject02/js/vuejs/top.js"></script>
+<script>
+	var vm = new Vue({
+		el : "#myleftMeun",
+		data : {
+			user : JSON.parse(window.sessionStorage.getItem("user"))
+		}
+	});
+	var vm1 = new Vue({
+		el : ".topdao"
+	});
+</script>
+
+<script type="text/javascript">
+	var user = JSON.parse(window.sessionStorage.getItem("user"));
+	console.log(user)
+	new Vue({
+		el : ".panel-body",
+		data : {
+			user : user
+		},
+		methods : {
+			fanhui : function() {
+				window.history.back();
+			},
+			tijiao : function(btntype) {
+				var TbReimburse = {};
+				TbReimburse["typeId"] = 2;
+				TbReimburse["createMan"] = user.employeeId;
+				TbReimburse["departmentId"] = user.departmentId;
+				TbReimburse["departmentId"] = user.departmentId;
+				TbReimburse["event"] = $.trim($("[name=event]").val());
+				TbReimburse["totalCount"] = $.trim($("#totalAccount").text());
+				var reimburseDetails = [];
+				var j = 1;
+				$("#myTable tbody tr").each(
+						function() {
+							j++;
+							var reimburseDetail = {};
+							reimburseDetail["desc"] = $.trim(($(this).find(
+									"[name=shixiang]").val()));
+							reimburseDetail["subTotal"] = $.trim(($(this).find(
+									"[name=subTotal]").val()));
+							reimburseDetail["picturePath"] = $.trim(($(this)
+									.find('#img' + (j)).attr("src")));
+							console.log(reimburseDetail);
+							reimburseDetails.push(reimburseDetail);
+						})
+				console.log(reimburseDetails)
+				TbReimburse["reimburseDetails"] = reimburseDetails;
+				if (btntype == "保存") {
+					TbReimburse["statusId"] = 1;
+				} else if (btntype == "提交") {
+					TbReimburse["statusId"] = 2;
+				}
+				var shixiang = $("[name='shixiang']");
+				if (shixiang.length == 0) {
+					alert("请输入至少一条明细");
+					return false;
+				}
+				var event = $("[name=event]").val();
+				if (event == "") {
+					alert("请输入报销事由");
+					return false;
+				}
+
+				if ($("#rowNumber").val() < 1) {
+					$("#notice").text("* 添加报销单的明细，至少一条 ！");
+					return false;
+				}
+				$("#notice").text("*");
+				for (var s = 0; s < $("#rowNumber").val(); s++) {
+					$("#account" + s).next(".notice").text("*");
+					$("#desc" + s).next(".notice").text("*");
+					if (isEmpty($("#account" + s).val())) {
+						$("#account" + s).next(".notice").text("* 金额不能为空  ！");
+						return false;
+					}
+					if (isEmpty($("#desc" + s).val())) {
+						$("#desc" + s).next(".notice").text("* 金额不能为空  ！");
+						return false;
+					}
+				}
+				//$(".buttons").hide();
+				addReimburse(TbReimburse);
+			}
+
+		}
+
+	});
+	function addReimburse(TbReimburse) {
+		console.log(TbReimburse);
+		$.ajax({
+			type : "post",
+			url : "/springmvcproject02/api/TbReimburseServlet/TbReimburse",
+			data : JSON.stringify(TbReimburse),
+			contentType : "application/json",
+			dataType : "JSON",
+			success : function(data) {
+				console.log(data)
+				if (data.code == "200") {
+					location.href = data.dizhi;
+				} else if (data.code == "300") {
+					location.href = data.dizhi;
+				}
+			}
+		});
+
+	}
+	//data:base64数据       name:文件名(feng.jpg)
+	var imgObj = {
+		"data" : "",
+		"name" : ""
+	};//图片对象
+
+	var i = parseInt(1);
+	var rowNumber = parseInt(1);
+	var totalAccount = 0;
+
+	$(function() {
+		/* //表单提交校验
+		$("form[name='claimForm']").submit(function(){
+			//判断是否加入了问题 
+			if($("#rowNumber").val()<1){
+				$("#notice").text("* 添加报销单的明细，至少一条 ！");
+				return false;
+			}	
+			$("#notice").text("*");
+			for(var s=0;s<$("#rowNumber").val();s++){
+				$("#account"+s).next(".notice").text("*");
+				$("#desc"+s).next(".notice").text("*");
+				if(isEmpty($("#account"+s).val())){
+					$("#account"+s).next(".notice").text("* 金额不能为空  ！");
+					return false;
+				}		
+				if(isEmpty($("#desc"+s).val())){
+					$("#desc"+s).next(".notice").text("* 金额不能为空  ！");
+					return false;
+				}			
+			}
+			$(".buttons").hide();
+			return true;
+		});	
+		 */
+
+		$("#AddRow")
+				.click(
+						function() {
+							var tr = $("#myTable tr").eq(0).clone();
+							++i;
+							var j = i - 1;
+
+							var item = $("#item").val();
+							var account = $("#account").val();
+							var desc = $("#desc").val();
+							var desc1 = $("#desc1").val();
+							var file = $("#desc1")[0].files[0];
+
+							if (!file) {
+								alert("请选择文件");
+								return;
+							}
+							if (item == "") {
+								alert("请输入项目说明");
+
+								return false;
+							}
+							if (account == "") {
+								alert("请输入项目金额");
+
+								return false;
+							} else {
+								if (isNaN(account)) {
+									alert("请输入正确的数字");
+
+									return false;
+								} else {
+									if (account <= 0) {
+										alert("请输入正确的数字");
+										return false;
+									}
+								}
+							}
+
+							totalAccount = parseFloat(totalAccount)
+									+ parseFloat(account);
+
+							tr.find("td").get(0).innerHTML = "<input  id=item"+j+" name='shixiang' type=hidden value="+item+" />"
+									+ item;
+							tr.find("td").get(1).innerHTML = "<input  id=account"+j+" name='subTotal' type=hidden value="+account+" />"
+									+ account;
+							tr.find("td").get(2).innerHTML = "<img class='img' style='width: 30px;height: 30px' id=img"+i+" src=''>";
+							tr.find("td").get(3).innerHTML = "<a href='javascript:void(0);' class='btn btn-danger btn-xs' id=DelRow"
+									+ j
+									+ " onclick=delRow("
+									+ j
+									+ ",this)  >删除 </a>";
+							//图片操作
+							var fr = new FileReader();
+							var fileEle = "<input type='file' name='imgFile' id='desc"
+									+ (j + 1) + "'>";
+
+							//$("#desc"+j).after(fileEle);
+							fr.readAsDataURL(file);//读取文件
+							//操作文件事件
+							fr.onload = function() {
+								var base64Data = this.result;//获得base编码字符串格式
+								imgObj.name = file.name;//设置文件名
+								imgObj.data = base64Data.substring(base64Data
+										.indexOf(';base64,') + 8);//设置base64数据字符串
+								$("#img" + i).attr("src", base64Data);//显示图片
+							};
+							tr.show();
+							tr.appendTo("#myTable");
+							//传递一共添加多少问题 
+							$("#account").val('');
+							$("#item").val('');
+							$("#desc1").val('');
+							$("#totalAccount").text(totalAccount);
+
+						});
+
+	});
+
+	function delRow(id, obj) {
+		var account = $("#account" + id).val();
+		$(obj).parent().parent().remove();
+		$("#desc" + id).remove();
+		totalAccount = parseFloat(totalAccount) - parseFloat(account);
+		$("#totalAccount").text(totalAccount);
+
+	}
+
+	function submitClaimVoucher(action) {
+		var shixiang = $("[name='shixiang']");
+		if (shixiang.length == 0) {
+			alert("请输入至少一条明细");
+			return false;
+		}
+		var event = $("#event").val();
+		if (event == "") {
+			alert("请输入报销事由");
+			return false;
+		}
+
+		if (action == '保存') {
+			document.claimForm.status.value = 1;
+		} else {
+			document.claimForm.status.value = 2;
+		}
+		document.claimForm.submit();
+
+	}
+
+	//图片检查
+	$("[name='imgFile']").on("change", function(e) {
+		var file = this.files[0];
+		var _temp = file.name.match(/\.jpg|\.png|\.gif|\.bmp/i);
+		if (!_temp) {
+			this.value = "";
+			alert("目前只支持jpg,png,bmp,gif格式图片文件");
+			return false;
+		} else if (file.size > (1024 * 1024)) {
+			this.value = "";
+			alert("目前只支持小于1M大小图片文件");
+			return false;
+		}
+	});
+</script>
+</html>

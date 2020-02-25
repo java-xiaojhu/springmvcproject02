@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>请假申请</title>
+<!-- Bootstrap Styles-->
+<link href="/springmvcproject02/assets/css/bootstrap.css"
+	rel="stylesheet" />
+<!-- FontAwesome Styles-->
+<link href="/springmvcproject02/assets/css/font-awesome.css"
+	rel="stylesheet" />
+<!-- Morris Chart Styles-->
+<link href="/springmvcproject02/assets/js/morris/morris-0.4.3.min.css"
+	rel="stylesheet" />
+<!-- Custom Styles-->
+<link href="/springmvcproject02/assets/css/custom-styles.css"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="/springmvcproject02/assets/js/toastr/toastr.css" />
+<!-- Google Fonts-->
+<link href='https://fonts.googleapis.com/css?family=Open+Sans'
+	rel='stylesheet' type='text/css' />
+<link rel="stylesheet" type="text/css"
+	href="/springmvcproject02/css/index.css">
+<script type="text/javascript" src="/springmvcproject02/js/vue.js"></script>
+</head>
+
+<body>
+	<div id="wrapper">
+		<nav class="navbar navbar-default top-navbar topdao" role="navigation">
+			<topdao></topdao>
+		</nav>
+		<!--/. NAV TOP  -->
+		<nav class="navbar-default navbar-side" role="navigation">
+			<div id="sideNav" href="">
+				<i class="fa fa-caret-right"></i>
+			</div>
+			<div class="sidebar-collapse" id="myleftMeun">
+				<hm :user="user"></hm>
+			</div>
+		</nav>
+		<!-- /. NAV SIDE  -->
+		<div id="page-wrapper">
+			<div id="page-inner">
+				<!-- /. ROW  -->
+				<div class="row">
+					<div class="main">
+						<!-- MAIN CONTENT -->
+						<div class="main-content">
+							<div class="container-fluid">
+								<div id="toastr-demo" class="panel panel-default">
+									<div class="panel-heading">月季报表</div>
+									<div class="panel-body">
+										<div class="row col-md-12">
+											<div class="row col-md-12 form-inline">
+												<div class="form-group">
+													<label for="exampleInputName2">年份: </label> <select v-model="year"
+														class="form-control">
+														
+														<option value="2017">2017</option>
+														<option value="2016">2016</option>
+														<option value="2019">2019</option>
+														<option value="2018">2018</option>
+														<option value="2020">2020</option>
+													</select>
+												</div>
+												<div class="form-group">
+													<label for="exampleInputName2">开始月份: </label> <select 
+													v-model="startmonth"
+														class="form-control">
+														<option value="1">1</option>
+														<option value="2">2</option>
+														<option value="3">3</option>
+														<option value="4">4</option>
+														<option value="5">5</option>
+														<option value="6">6</option>
+														<option value="7">7</option>
+														<option value="8">8</option>
+														<option value="9">9</option>
+														<option value="10">10</option>
+														<option value="11">11</option>
+														<option value="12">12</option>
+													</select>
+												</div>
+												<div class="form-group">
+													<label for="exampleInputName2">结束月份: </label> <select v-model="endmonth"
+														class="form-control">
+														<option value="1">1</option>
+														<option value="2">2</option>
+														<option value="3">3</option>
+														<option value="4">4</option>
+														<option value="5">5</option>
+														<option value="6">6</option>
+														<option value="7">7</option>
+														<option value="8">8</option>
+														<option value="9">9</option>
+														<option value="10">10</option>
+														<option value="11">11</option>
+														<option value="12">12</option>
+													</select>
+												</div>
+												<button class="btn btn-default" @click="tijiao">查询</button>
+											</div>
+										</div>
+										<br> <br>
+										<table class="table table-bordered">
+											<caption>月度统计列表</caption>
+											<thead>
+												<tr>
+													<th class="text-center">编号</th>
+													<th class="text-center">总计</th>
+													<th class="text-center">年份</th>
+													<th class="text-center">月份</th>
+													<th class="text-center">部门</th>
+													<th class="text-center">操作</th>
+												</tr>
+											</thead>
+											<tbody class='text-center'>
+												<tr v-for="(month,index) in pageinfo.list">
+													<td>{{index+1}}</td>
+													<td>￥{{month.total}}</td>
+													<td>{{month.year}}年</td>
+													<td>{{month.month}}月</td>
+													<td>{{month.departmentName}}</td>
+													<td><a href="javascript:void(0);"
+														@click="aclick(month)" class="btn btn-success btn-xs">查看
+													</a></td>
+												</tr>
+											</tbody>
+												<tfoot>
+													<tr>
+														<td colspan="8">
+															<div class="row" style="padding: 0px; margin: 0px;">
+																<div class="col-md-4 text-center"
+																	style="padding: 6px 0px;">
+																	第<span id="pageNum">{{pageinfo.pageNum}}</span>页/共<span
+																		id="totle">{{pageinfo.pages}}</span>页
+																</div>
+																<div class="col-md-4 text-center">
+																	<a href="javascript:void(0);" @click="first"
+																		class="btn btn-default btn-sm"> <font
+																		style="vertical-align: inherit;"> <font
+																			style="vertical-align: inherit;">首页</font>
+																	</font>
+																	</a> <a href="javascript:void(0);" v-if="pageinfo.hasPreviousPage" @click="prev"
+																		class="btn btn-default btn-sm"> <font
+																		style="vertical-align: inherit;"> <font
+																			style="vertical-align: inherit;">上一页</font>
+																	</font>
+																	</a> <a href="javascript:void(0);" v-if="pageinfo.hasNextPage" @click="next"
+																		class="btn btn-default btn-sm"> <font
+																		style="vertical-align: inherit;"> <font
+																			style="vertical-align: inherit;">下一页</font>
+																	</font>
+																	</a> <a href="javascript:void(0);" @click="last"
+																		class="btn btn-default btn-sm"> <font
+																		style="vertical-align: inherit;"> <font
+																			style="vertical-align: inherit;">尾页</font>
+																	</font>
+																	</a>
+																</div>
+																<div class="col-md-4 text-center"
+																	style="padding: 6px 0px;">
+																	共<span id="">{{pageinfo.total}}</span>条记录
+																</div>
+															</div>
+														</td>
+													</tr>
+												</tfoot>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- END MAIN CONTENT -->
+					</div>
+				</div>
+			</div>
+			<!-- /. PAGE INNER  -->
+		</div>
+		<!-- /. PAGE WRAPPER  -->
+	</div>
+	<!-- /. WRAPPER  -->
+	<!-- JS Scripts-->
+	<!-- jQuery Js -->
+	<script src="/springmvcproject02/assets/js/jquery-1.10.2.js"></script>
+	<!-- Bootstrap Js -->
+	<script src="/springmvcproject02/assets/js/bootstrap.min.js"></script>
+
+	<!-- Metis Menu Js -->
+	<script src="/springmvcproject02/assets/js/jquery.metisMenu.js"></script>
+	<!-- Morris Chart Js -->
+	<script src="/springmvcproject02/assets/js/morris/raphael-2.1.0.min.js"></script>
+	<script src="/springmvcproject02/assets/js/morris/morris.js"></script>
+
+	<script src="/springmvcproject02/assets/js/easypiechart.js"></script>
+	<script src="/springmvcproject02/assets/js/easypiechart-data.js"></script>
+
+	<script
+		src="/springmvcproject02/assets/js/Lightweight-Chart/jquery.chart.js"></script>
+
+	<!-- Custom Js -->
+	<script src="/springmvcproject02/assets/js/custom-scripts.js"></script>
+	<script type="text/javascript"
+		src="/springmvcproject02/assets/js/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+	<script type="text/javascript"
+		src="/springmvcproject02/assets/js/toastr/toastr.min.js"></script>
+	<script type="text/javascript"
+		src="/springmvcproject02/assets/js/scripts/klorofil-common.js"></script>
+</body>
+<script type="text/javascript"
+	src="/springmvcproject02/js/vuejs/index.js"></script>
+<script type="text/javascript"
+	src="/springmvcproject02/js/vuejs/leftMeun.js"></script>
+<script type="text/javascript" src="/springmvcproject02/js/vuejs/top.js"></script>
+<script>
+	var vm = new Vue({
+		el : "#myleftMeun",
+		data : {
+			user:JSON.parse(window.sessionStorage.getItem("user"))
+		}
+	});
+	var vm1 = new Vue({
+		el : ".topdao"
+	});
+</script>
+<script>
+	var vmmian = new Vue({
+		data : {
+			user : JSON.parse(window.sessionStorage.getItem("user")),
+			pageinfo:{},
+			year:'',
+			startmonth:'',
+			endmonth:''
+		},
+		methods:{
+			first : function() {
+				this.goToPage("/"+ this.pageinfo.firstPage+ "/10/0/null/null/null/0");
+			},
+			prev : function() {
+				this.goToPage("/"+ this.pageinfo.prePage+ "/10/0/null/null/null/0");
+			},
+			next : function() {
+				this.goToPage("/"+ this.pageinfo.nextPage+ "/10/0/null/null/null/0");
+			},
+			last : function() {
+				this.goToPage("/"+ this.pageinfo.lastPage+ "/10/0/null/null/null/0");
+			},
+			goToPage(cnetent){
+     			let _this=this;
+     			$.getJSON(`/springmvcproject02/api/CountServlet/months${cnetent}`,function(Pro){
+     				console.log(Pro)
+     				_this.pageinfo=Pro;
+     			});
+     		},
+     		aclick(month) {	
+     			window.sessionStorage.setItem("month",JSON.stringify(month));
+     			location.href="/springmvcproject02/ui/ReportForms/MonthView.html";
+			},
+			tijiao(){
+				if(this.year==''){
+					this.year=0;
+				}
+				if(this.startmonth==''){
+					this.startmonth=1;
+				}
+				if(this.endmonth==''){
+					this.endmonth=12;
+				}	
+				if(this.startmonth>this.endmonth){
+					alert("开始月份不能大于结束月份")
+					return false;
+				}
+				
+				var centent=`/1/10/${this.year}/${this.startmonth}/${this.endmonth}`
+				this.goToPage(centent);
+				this.endmonth='';
+				this.startmonth='';
+				this.year='';
+			}
+     			
+		},mounted(){
+     		let _this=this;
+     		_this.goToPage("/1/10/0/0/0");
+     	}
+
+	}).$mount(".panel-body");
+</script>
+
+</html>

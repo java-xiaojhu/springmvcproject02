@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>请假申请</title>
+<!-- Bootstrap Styles-->
+<link href="/springmvcproject02/assets/css/bootstrap.css"
+	rel="stylesheet" />
+<!-- FontAwesome Styles-->
+<link href="/springmvcproject02/assets/css/font-awesome.css"
+	rel="stylesheet" />
+<!-- Morris Chart Styles-->
+<link href="/springmvcproject02/assets/js/morris/morris-0.4.3.min.css"
+	rel="stylesheet" />
+<!-- Custom Styles-->
+<link href="/springmvcproject02/assets/css/custom-styles.css"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="/springmvcproject02/assets/js/toastr/toastr.css" />
+<!-- Google Fonts-->
+<link href='https://fonts.googleapis.com/css?family=Open+Sans'
+	rel='stylesheet' type='text/css' />
+<link rel="stylesheet" type="text/css"
+	href="/springmvcproject02/css/index.css">
+<script type="text/javascript" src="/springmvcproject02/js/vue.js"></script>
+</head>
+
+<body>
+	<div id="wrapper">
+		<nav class="navbar navbar-default top-navbar topdao" role="navigation">
+			<topdao></topdao>
+		</nav>
+		<!--/. NAV TOP  -->
+		<nav class="navbar-default navbar-side" role="navigation">
+			<div id="sideNav" href="">
+				<i class="fa fa-caret-right"></i>
+			</div>
+			<div class="sidebar-collapse" id="myleftMeun">
+				<hm :user="user"></hm>
+			</div>
+		</nav>
+		<!-- /. NAV SIDE  -->
+		<div id="page-wrapper">
+			<div id="page-inner">
+				<!-- /. ROW  -->
+				<div class="row">
+					<div class="main">
+						<!-- MAIN CONTENT -->
+						<div class="main-content">
+							<div class="container-fluid">
+								<div id="toastr-demo" class="panel panel-default box">
+									<div class="panel-heading">月季报表</div>
+									<div class="panel-body">
+										<div class="row col-md-12">
+											<div class="row col-md-12 form-inline">
+												<span>年份: {{newmonth.year}} 月份: {{newmonth.month}}</span>
+												<button class="btn btn-success" @click="exporttable">导出报表</button>
+												<button class="btn btn-primary" @click="print">打印</button>
+											</div>
+										</div>
+										<br> <br>
+										<table class="table table-bordered" id="test_table">
+											<caption>月度统计列表</caption>
+											<thead>
+												<tr>
+													<th class="text-center">编号</th>
+													<th class="text-center">报销人</th>
+													<th class="text-center">总计</th>
+													<th class="text-center">年份</th>
+													<th class="text-center">月份</th>
+													<th class="text-center">部门</th>
+
+												</tr>
+											</thead>
+											<tbody class='text-center' id="tbalecneter">
+												<tr v-for="(month,index) in pageinfo.list">
+													<td>{{index+1}}</td>
+													<td>{{month.employeeName}}</td>
+													<td>￥{{month.total}}</td>
+													<td>{{month.year}}年</td>
+													<td>{{month.month}}月</td>
+													<td>{{month.departmentName}}</td>
+												</tr>
+											</tbody>
+											<tfoot>
+												<tr>
+													<td colspan="8">
+														<div class="row" style="padding: 0px; margin: 0px;">
+															<div class="col-md-4 text-center"
+																style="padding: 6px 0px;">
+																第<span id="pageNum">{{pageinfo.pageNum}}</span>页/共<span
+																	id="totle">{{pageinfo.pages}}</span>页
+															</div>
+															<div class="col-md-4 text-center">
+																<a href="javascript:void(0);"
+																	@click="goToPage(pageinfo.firstPage,pageinfo.pageSize)"
+																	class="btn btn-default btn-sm"> <font
+																	style="vertical-align: inherit;"> <font
+																		style="vertical-align: inherit;">首页</font>
+																</font>
+																</a> <a href="javascript:void(0);"
+																	v-if="pageinfo.hasPreviousPage"
+																	@click="goToPage(pageinfo.prePage,pageinfo.pageSize)"
+																	class="btn btn-default btn-sm"> <font
+																	style="vertical-align: inherit;"> <font
+																		style="vertical-align: inherit;">上一页</font>
+																</font>
+																</a> <a href="javascript:void(0);"
+																	v-if="pageinfo.hasNextPage"
+																	@click="goToPage(pageinfo.nextPage,pageinfo.pageSize)"
+																	class="btn btn-default btn-sm"> <font
+																	style="vertical-align: inherit;"> <font
+																		style="vertical-align: inherit;">下一页</font>
+																</font>
+																</a> <a href="javascript:void(0);"
+																	@click="goToPage(pageinfo.lastPage,pageinfo.pageSize)"
+																	class="btn btn-default btn-sm"> <font
+																	style="vertical-align: inherit;"> <font
+																		style="vertical-align: inherit;">尾页</font>
+																</font>
+																</a>
+															</div>
+															<div class="col-md-4 text-center"
+																style="padding: 6px 0px;">
+																共<span id="">{{pageinfo.total}}</span>条记录
+															</div>
+														</div>
+													</td>
+												</tr>
+											</tfoot>
+										</table>
+										<br> <br>
+										<div class="row col-md-12" id="echartsDom"></div>
+										<div class="row col-md-12 text-center">
+											<button class="btn btn-success" onclick="initEcharts('bar')" />
+											查看柱状图
+											</button>
+											<button class="btn btn-success" onclick="initEcharts('pie')" />
+											查看饼图
+											</button>
+											<button class="btn btn-success" onclick="initEcharts('line')" />
+											查看曲线图
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- END MAIN CONTENT -->
+					</div>
+				</div>
+			</div>
+			<!-- /. PAGE INNER  -->
+		</div>
+		<!-- /. PAGE WRAPPER  -->
+	</div>
+	<!-- /. WRAPPER  -->
+	<!-- JS Scripts-->
+	<!-- jQuery Js -->
+	<script src="/springmvcproject02/assets/js/jquery-1.10.2.js"></script>
+	<!-- Bootstrap Js -->
+	<script src="/springmvcproject02/assets/js/bootstrap.min.js"></script>
+
+	<!-- Metis Menu Js -->
+	<script src="/springmvcproject02/assets/js/jquery.metisMenu.js"></script>
+	<!-- Morris Chart Js -->
+	<script src="/springmvcproject02/assets/js/morris/raphael-2.1.0.min.js"></script>
+	<script src="/springmvcproject02/assets/js/morris/morris.js"></script>
+
+	<script src="/springmvcproject02/assets/js/easypiechart.js"></script>
+	<script src="/springmvcproject02/assets/js/easypiechart-data.js"></script>
+
+	<script
+		src="/springmvcproject02/assets/js/Lightweight-Chart/jquery.chart.js"></script>
+
+	<!-- Custom Js -->
+	<script src="/springmvcproject02/assets/js/custom-scripts.js"></script>
+	<script type="text/javascript"
+		src="/springmvcproject02/assets/js/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+	<script type="text/javascript"
+		src="/springmvcproject02/assets/js/toastr/toastr.min.js"></script>
+	<script type="text/javascript"
+		src="/springmvcproject02/assets/js/scripts/klorofil-common.js"></script>
+</body>
+<script type="text/javascript"
+	src="/springmvcproject02/js/vuejs/index.js"></script>
+<script type="text/javascript"
+	src="/springmvcproject02/js/vuejs/leftMeun.js"></script>
+<script type="text/javascript" src="/springmvcproject02/js/vuejs/top.js"></script>
+<script type="text/javascript" src="/springmvcproject02/js/common.js"></script>
+<script type="text/javascript" src="/springmvcproject02/js/echarts.js"
+	charset="UTF-8"></script>
+<script>
+	var vm = new Vue({
+		el : "#myleftMeun",
+		data : {
+			user:JSON.parse(window.sessionStorage.getItem("user"))
+		}
+	});
+	var vm1 = new Vue({
+		el : ".topdao"
+	});
+</script>
+<script>
+	console.log(JSON.parse(window.sessionStorage.getItem("month")))
+	var vmmian = new Vue({
+		data : {
+			newmonth : JSON.parse(window.sessionStorage.getItem("month")),
+			pageinfo:{}
+		},
+		methods:{
+			goToPage(n,s,month,year){
+     			let _this=this;
+     			$.getJSON(`/springmvcproject02/api/CountServlet/months/${n}/${s}/${month}/${year}`,function(Pro){
+     				console.log(Pro)
+     				_this.pageinfo=Pro;				
+     			});
+     		},
+     		print(){
+     			var oldHtml = $("body").html();
+     			var printbox = $(".box").html();
+     			$("body").html(printbox)  ;
+     			window.print();
+     			$("body").html(oldHtml)  ;
+     		} ,
+     		exporttable(){
+     			let _this=this;
+     		
+     			var dataList=[];
+     			$.each(_this.pageinfo.list,function(i,obj){
+     				var col=[];
+     				i++;
+     				col.push(i);
+     				col.push(obj.employeeName);
+     				col.push(obj.total);
+     				col.push(obj.year);
+     				col.push(obj.month);
+     				col.push(obj.departmentName); 
+     				dataList.push(col);
+     			})
+     			
+     			var rowsName=[];
+     			$("table th").each(function(i,obj){
+     				rowsName.push($.trim($(this).text()));
+     			});
+     			var createExecl={};   			
+				var title= _this.newmonth.year+'年'+_this.newmonth.month+'月'+'份报销统计图';
+				createExecl["datalist"]=dataList;
+     			createExecl["columnName"]=rowsName
+     			createExecl["title"]=title
+     			console.log(createExecl);
+				$.ajax({
+					type : "post",
+					url : "/springmvcproject02/api/CountServlet/execl",
+					data : JSON.stringify(createExecl),
+					contentType : "application/json;charset=UTF-8",//非常重要
+					dataType : "JSON",
+					success : function(data) {
+						console.log(data)
+						if (data.code == "200") {
+							alert(data.msg );
+						} else if (data.code == "300") {
+							alert(data.msg );
+						}
+					}
+				});
+     		}
+		},mounted(){
+     		let _this=this;
+     		let dd=new Promise(function(resolve, reject) { 
+     			$.getJSON(`/springmvcproject02/api/CountServlet/months/1/10/${_this.newmonth.month}/${_this.newmonth.year}`,function(Pro){
+     				resolve(Pro)
+     			});
+     		});     		
+     		dd.then(function(a){
+     			_this.pageinfo=a;
+     			initEcharts('pie')
+     		});
+     	}
+
+	}).$mount(".panel-body");	
+	function initEcharts(type){
+		var data =vmmian.pageinfo.list;
+		var xAxis = new Array();
+		var legend = new Array(); 
+		for(var i=0;i<data.length;i++){
+			xAxis[i] = data[i].employeeName;
+			legend[i] = data[i].total;
+		}
+		var year = vmmian.newmonth.year;
+		var month = vmmian.newmonth.month;
+		var option = null;
+		if(type=='bar'){
+			option = {
+			    title: {
+			    	text: year+'年'+month+'月'+'份报销统计图'
+			    },
+			    tooltip: {},
+			    legend: {
+			        data:['报销金额']
+			    },
+			    xAxis: {
+			        data: xAxis
+			    },
+			    yAxis: {},
+			    series: [{
+			        name: '报销金额',
+			        type: 'bar',
+			        barWidth : 30,
+			        data: legend
+			    }]
+			};
+		}else if(type=="pie"){
+			option = {
+			    title: {
+			    	 text: year+'年'+month+'月'+'份报销统计图'
+			    },
+			    tooltip: {
+			    	formatter: function(params, ticket, callback) {
+		            return  params.seriesName  + "<br />" + data[params.dataIndex].employeeName +":"+data[params.dataIndex].total;
+		        }
+				},
+			    series: [{
+			        name: '报销金额',
+			        type: 'pie',
+			        radius:'60%',
+			        label : {
+			        	normal : {
+			        		formatter: '{b}: ({d}%)',
+			        		textStyle : {
+				        		fontWeight : 'normal',
+				        		fontSize : 15
+			        		}
+			        	}
+			        }
+			    }],
+			    dataset:{
+			    	source:data
+			    }
+			};
+		}else{
+			option = {
+			    title: {
+			    	text: year+'年'+month+'月'+'份报销统计图'
+			    },
+			    tooltip: {},
+			    legend: {
+			        data:['报销金额']
+			    },
+			    xAxis: {
+			        data: xAxis
+			    },
+			    yAxis: {},
+			    series: [{
+			        name: '报销金额',
+			        type: 'line',
+			        barWidth : 30,
+			        data: legend
+			    }]
+			};
+		}
+		var dom = document.getElementById('echartsDom');
+		$("#echartsDom").height('400px');
+		var myChart = echarts.init(dom);
+		if (myChart != null && myChart != "" && myChart != undefined) {//关键
+	        myChart.dispose();
+	    }
+		var myChart = echarts.init(dom);
+		console.log(option)
+		myChart.setOption(option);
+	}	
+</script>
+</html>
